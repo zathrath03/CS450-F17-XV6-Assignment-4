@@ -454,9 +454,16 @@ stati(struct inode *ip, struct stat *st)
   st->type = ip->type;
   st->nlink = ip->nlink;
   st->size = ip->size;
-  // if ip->type == T_EXTENT
-  //  st->? = ip->?
-  //  etc
+  
+  if(ip->type == T_EXTENT){
+    // using 13 since fs.h defines NDIRECT as 12 and says
+    // the address is stored in NDIRECT+1
+    st->addrs = (ip->addrs[NDIRECT+1] & 0xFFFFFF00) >> 2;
+    st->length = (ip->addrs[NDIRECT+1] & 0xFF);
+  } else{
+    st->addrs = ip->addrs[NDIRECT+1];
+    st->length = 1;
+  }
 }
 
 //PAGEBREAK!

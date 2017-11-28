@@ -4,5 +4,5 @@
 #define O_CREATE  0x200
 // add an O_EXTENT flag to the open() system call
 // that will create an extent based file
-// #define O_EXTENT 0X???
-// How should we decide what values to use for ???
+// the number 0x201 is arbitrary
+#define O_EXTENT  0x201
