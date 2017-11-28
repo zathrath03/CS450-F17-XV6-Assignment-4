@@ -454,7 +454,8 @@ stati(struct inode *ip, struct stat *st)
   st->type = ip->type;
   st->nlink = ip->nlink;
   st->size = ip->size;
-  
+  // TA directed returning the address even though default
+  // fstat() doesn't return the address. Added
   if(ip->type == T_EXTENT){
     // using 13 since fs.h defines NDIRECT as 12 and says
     // the address is stored in NDIRECT+1
