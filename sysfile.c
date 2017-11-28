@@ -248,16 +248,17 @@ create(char *path, short type, short major, short minor)
   if((dp = nameiparent(path, name)) == 0)
     return 0;
   ilock(dp);
-
+// checking if file is existing 
   if((ip = dirlookup(dp, name, &off)) != 0){
     iunlockput(dp);
     ilock(ip);
-    if(type == T_FILE && ip->type == T_FILE)
+    if((type == T_FILE && ip->type == T_FILE) || (type == T_EXTENT && ip->type == T_EXTENT))
       return ip;
     iunlockput(ip);
     return 0;
   }
 
+// creating file coz it doesnt exist
   if((ip = ialloc(dp->dev, type)) == 0)
     panic("create: ialloc");
 
