@@ -370,6 +370,8 @@ iunlockput(struct inode *ip)
 
 // Return the disk block address of the nth block in inode ip.
 // If there is no such block, bmap allocates one.
+
+// Needs to be modified to allocate memory in an extent format
 static uint
 bmap(struct inode *ip, uint bn)
 {
@@ -382,7 +384,9 @@ bmap(struct inode *ip, uint bn)
     return addr;
   }
   bn -= NDIRECT;
-
+  // if(ip->type = T_EXTENT)
+  // handle an extent file type. shouldn't need to modify
+  // how non-extent file types are handled below
   if(bn < NINDIRECT){
     // Load indirect block, allocating if necessary.
     if((addr = ip->addrs[NDIRECT]) == 0)
@@ -440,11 +444,19 @@ itrunc(struct inode *ip)
 void
 stati(struct inode *ip, struct stat *st)
 {
+  // fstat() uses stati to dump information. Need to also
+  // modify struct stat in stat.h to hold the information
+  // modify fstat() system call such that it will dump
+  // information about each extent of an extent based
+  // file in addition to file size
   st->dev = ip->dev;
   st->ino = ip->inum;
   st->type = ip->type;
   st->nlink = ip->nlink;
   st->size = ip->size;
+  // if ip->type == T_EXTENT
+  //  st->? = ip->?
+  //  etc
 }
 
 //PAGEBREAK!
