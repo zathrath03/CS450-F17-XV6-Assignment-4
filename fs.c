@@ -501,8 +501,7 @@ stati(struct inode *ip, struct stat *st)
   st->type = ip->type;
   st->nlink = ip->nlink;
   st->size = ip->size;
-  memmove(st->addrs, ip->addrs, (NDIRECT + 1) * sizeof(uint));
-  /*
+  /*memmove(st->addrs, ip->addrs, (NDIRECT + 1) * sizeof(uint));
   // TA directed returning the address even though default
   // fstat() doesn't return the address. Added
   if(ip->type == T_EXTENT){
@@ -513,7 +512,7 @@ stati(struct inode *ip, struct stat *st)
   } else{
     st->addrs = ip->addrs[NDIRECT+1];
     st->length = 1;
-    }*/
+    }
   if(ip->type == T_EXTENT){
     int i;
     uint address;
@@ -528,7 +527,7 @@ stati(struct inode *ip, struct stat *st)
 	    cprintf("\nEXTENT\nbase addr: %d\n offset: %d\n length: %d\n", address, offset, length);
       }
     }
-  }
+  }*/
 }
 
 //PAGEBREAK!
