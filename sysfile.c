@@ -454,12 +454,14 @@ sys_lseek(void)
   struct file *f;
 
   // checks to verify that there are valid int arguments
-  // stores the arguments in fd and offset
+  // stores the arguments in fd, f and offset
   if (argfd(0, &fd, &f) < 0 || argint(1, &offset) < 0)
   {
     return -1;
   }
-
+  // f now stores the file referenced by fd
+  // changes the offset for the file to the offset value passed in
+  f->off = offset;
   // calls the lseek() function in file.c
-  return lseek(fd, offset);
+  // return lseek(f, offset);
 }
