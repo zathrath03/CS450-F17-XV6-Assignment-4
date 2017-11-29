@@ -30,7 +30,19 @@ main (int argc, char* argv[]) {
     printf(stdout, "File size is different from expected, size = %d\n", st.size);
   }
   printf(stdout, "Testing lseek(). Current file contents:\n");
-  cat("mytestFile.txt");
+  
+  // output contents of the file
+  int n;
+  char buf[512];
+  while((n = read(fd, buf, sizeof(buf))) > 0) {
+    if (write(1, buf, n) != n) {
+      printf(1, "cat: write error\n");
+      exit();
+    }
+  }
+  if(n < 0)
+    printf(1, "cat: read error\n");
+  
   // the offset should be 70 before this: 10 writes of 7 characters
   if (lseek(fd, 80) == -1){
     printf(stdout, "lseek error\n");
@@ -41,7 +53,16 @@ main (int argc, char* argv[]) {
   }
   // should see a gap of 10 zeroes before the last hello\n
   printf(stdout, "Gap of 10 inserted. Current file contents:\n");
-  cat("mytestFile.txt");
+  
+  // output contents of the file
+  while((n = read(fd, buf, sizeof(buf))) > 0) {
+    if (write(1, buf, n) != n) {
+      printf(1, "cat: write error\n");
+      exit();
+    }
+  }
+  if(n < 0)
+    printf(1, "cat: read error\n");;
 
   if(lseek(fd, -1) == 0){
     printf(stdout, "Error: lseek() allowed negative offset\n");
