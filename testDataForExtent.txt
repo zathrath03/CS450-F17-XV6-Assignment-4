@@ -1,0 +1,226 @@
+How to compile and run the code:
+
+cd to xv6 directory
+we have Vagrant setup in place. Please refer to http://moss.cs.iit.edu/cs450/assign01-xv6-syscall.html
+for vagrant setup.
+
+In xv6 directory run below commands:
+$vagrant up
+$vagrant ssh
+once you are in the VM
+cd /vagrant
+vagrant@vagrant-ubuntu-trusty-64:/vagrant$ make clean; make; make qemu-nox
+
+TEST data for EXTENT file system:s
+We are testing extent file system by creating two test files and then getting there metadata information. 
+First file has 8 byte of string added to 64 lines and 2nd file has 7byte of string added to 64 line again.
+We are testing if the File system we created is EXTENT, by displaying the “Type” defined in stat.h
+
+
+$ fsTest
+**************** Starting test for file1 ********************
+Writing abcdef to line0 of file1
+Writing abcdef to line1 of file1
+Writing abcdef to line2 of file1
+Writing abcdef to line3 of file1
+Writing abcdef to line4 of file1
+Writing abcdef to line5 of file1
+Writing abcdef to line6 of file1
+Writing abcdef to line7 of file1
+Writing abcdef to line8 of file1
+Writing abcdef to line9 of file1
+Writing abcdef to line10 of file1
+Writing abcdef to line11 of file1
+Writing abcdef to line12 of file1
+Writing abcdef to line13 of file1
+Writing abcdef to line14 of file1
+Writing abcdef to line15 of file1
+Writing abcdef to line16 of file1
+Writing abcdef to line17 of file1
+Writing abcdef to line18 of file1
+Writing abcdef to line19 of file1
+Writing abcdef to line20 of file1
+Writing abcdef to line21 of file1
+Writing abcdef to line22 of file1
+Writing abcdef to line23 of file1
+Writing abcdef to line24 of file1
+Writing abcdef to line25 of file1
+Writing abcdef to line26 of file1
+Writing abcdef to line27 of file1
+Writing abcdef to line28 of file1
+Writing abcdef to line29 of file1
+Writing abcdef to line30 of file1
+Writing abcdef to line31 of file1
+Writing abcdef to line32 of file1
+Writing abcdef to line33 of file1
+Writing abcdef to line34 of file1
+Writing abcdef to line35 of file1
+Writing abcdef to line36 of file1
+Writing abcdef to line37 of file1
+Writing abcdef to line38 of file1
+Writing abcdef to line39 of file1
+Writing abcdef to line40 of file1
+Writing abcdef to line41 of file1
+Writing abcdef to line42 of file1
+Writing abcdef to line43 of file1
+Writing abcdef to line44 of file1
+Writing abcdef to line45 of file1
+Writing abcdef to line46 of file1
+Writing abcdef to line47 of file1
+Writing abcdef to line48 of file1
+Writing abcdef to line49 of file1
+Writing abcdef to line50 of file1
+Writing abcdef to line51 of file1
+Writing abcdef to line52 of file1
+Writing abcdef to line53 of file1
+Writing abcdef to line54 of file1
+Writing abcdef to line55 of file1
+Writing abcdef to line56 of file1
+Writing abcdef to line57 of file1
+Writing abcdef to line58 of file1
+Writing abcdef to line59 of file1
+Writing abcdef to line60 of file1
+Writing abcdef to line61 of file1
+Writing abcdef to line62 of file1
+Writing abcdef to line63 of file1
+Writing abcdef to line64 of file1
+File size i= 520
+File type = 4
+File system device = 1
+inode num = 20
+Number of links = 1
+Block Addresses:
+  Pointer 0's address = 652 with size = 2
+  Pointer 1's address = 0 with size = 0
+  Pointer 2's address = 0 with size = 0
+  Pointer 3's address = 0 with size = 0
+  Pointer 4's address = 0 with size = 0
+  Pointer 5's address = 0 with size = 0
+  Pointer 6's address = 0 with size = 0
+  Pointer 7's address = 0 with size = 0
+  Pointer 8's address = 0 with size = 0
+  Pointer 9's address = 0 with size = 0
+  Pointer 10's address = 0 with size = 0
+  Pointer 11's address = 0 with size = 0
+  Pointer 12's address = 0 with size = 0
+Number of blocks = 0
+************* Starting test for file2 ***************
+Writing hello to line0  of file2
+Writing hello to line1  of file2
+Writing hello to line2  of file2
+Writing hello to line3  of file2
+Writing hello to line4  of file2
+Writing hello to line5  of file2
+Writing hello to line6  of file2
+Writing hello to line7  of file2
+Writing hello to line8  of file2
+Writing hello to line9  of file2
+Writing hello to line10  of file2
+Writing hello to line11  of file2
+Writing hello to line12  of file2
+Writing hello to line13  of file2
+Writing hello to line14  of file2
+Writing hello to line15  of file2
+Writing hello to line16  of file2
+Writing hello to line17  of file2
+Writing hello to line18  of file2
+Writing hello to line19  of file2
+Writing hello to line20  of file2
+Writing hello to line21  of file2
+Writing hello to line22  of file2
+Writing hello to line23  of file2
+Writing hello to line24  of file2
+Writing hello to line25  of file2
+Writing hello to line26  of file2
+Writing hello to line27  of file2
+Writing hello to line28  of file2
+Writing hello to line29  of file2
+Writing hello to line30  of file2
+Writing hello to line31  of file2
+Writing hello to line32  of file2
+Writing hello to line33  of file2
+Writing hello to line34  of file2
+Writing hello to line35  of file2
+Writing hello to line36  of file2
+Writing hello to line37  of file2
+Writing hello to line38  of file2
+Writing hello to line39  of file2
+Writing hello to line40  of file2
+Writing hello to line41  of file2
+Writing hello to line42  of file2
+Writing hello to line43  of file2
+Writing hello to line44  of file2
+Writing hello to line45  of file2
+Writing hello to line46  of file2
+Writing hello to line47  of file2
+Writing hello to line48  of file2
+Writing hello to line49  of file2
+Writing hello to line50  of file2
+Writing hello to line51  of file2
+Writing hello to line52  of file2
+Writing hello to line53  of file2
+Writing hello to line54  of file2
+Writing hello to line55  of file2
+Writing hello to line56  of file2
+Writing hello to line57  of file2
+Writing hello to line58  of file2
+Writing hello to line59  of file2
+Writing hello to line60  of file2
+Writing hello to line61  of file2
+Writing hello to line62  of file2
+Writing hello to line63  of file2
+Writing hello to line64  of file2
+File size i= 455
+File type = 4
+File system device = 1
+inode num = 21
+Number of links = 1
+Block Addresses:
+ File2: Pointer 0's address = 654 with size = 1
+ File2: Pointer 1's address = 0 with size = 0
+ File2: Pointer 2's address = 0 with size = 0
+ File2: Pointer 3's address = 0 with size = 0
+ File2: Pointer 4's address = 0 with size = 0
+ File2: Pointer 5's address = 0 with size = 0
+ File2: Pointer 6's address = 0 with size = 0
+ File2: Pointer 7's address = 0 with size = 0
+ File2: Pointer 8's address = 0 with size = 0
+ File2: Pointer 9's address = 0 with size = 0
+ File2: Pointer 10's address = 0 with size = 0
+ File2: Pointer 11's address = 0 with size = 0
+ File2: Pointer 12's address = 0 with size = 0
+Number of blocks = 0
+***********Testing Extent File system completed!*************
+$ ls
+.              1 1 512
+..             1 1 512
+README         2 2 2290
+cat            2 3 14458
+echo           2 4 13331
+forktest       2 5 8177
+grep           2 6 16014
+init           2 7 14208
+kill           2 8 13375
+ln             2 9 13297
+ls             2 10 16317
+mkdir          2 11 13396
+rm             2 12 13373
+sh             2 13 24825
+stressfs       2 14 14291
+usertests      2 15 67223
+wc             2 16 15144
+fsTest         2 17 17820
+zombie         2 18 13041
+console        3 19 0
+mytestFile.txt 4 20 520
+mytestFile2.tx 4 21 455
+$ wc -l mytestFile.txt
+wc: cannot open -l
+$ wc mytestFile.txt
+exec: fail
+exec wc failed
+$ wc mytestFile.txt
+65 66 520 mytestFile.txt
+$ wc mytestFile2.tx
+65 66 455 mytestFile2.tx
+$ 
