@@ -13,7 +13,7 @@ struct stat {
   uint size;   // Size of file in bytes
   // adding an address after discussion with the TA
   // address wasn't included for the default fstat
-  uint addrs; // Disk address of block
+  uint bloaddrs[13]; // Disk address of block
   // length will be 1 by default for T_FILE /T_DIR / T_DEV types
   // length will be the last byte of the address for T_EXTENT
   uint length; // Number of blocks

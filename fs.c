@@ -377,51 +377,66 @@ bmap(struct inode *ip, uint bn)
   uint addr, *a;
   struct buf *bp;
   // PA4 changes: Needs to be modified to allocate memory in an extent format
-  if (ip -> type == T_EXTENT){   
-    int addBlock = -1;
-    uint len;
-    int nextBlock = -1;
-    int i;
-    for (i = 0; i < NDIRECT; i+=2)
-    {
-      if (addBlock == -1 && ip -> addrs[i] == 0)
-	    addBlock = i;
-      len = ip -> addrs[i] & 0xFF;
-      if (bn >= ip -> addrs[i+1] && bn < len + ip -> addrs[i+1]){
-        addr = ip -> addrs[i] >> 8;
-	      addr += bn - ip -> addrs[i+1];
-	      return addr;
+if (ip->type == T_EXTENT) {
+  uint blo = 0;
+  int i;
+  for (i = 0; i < NDIRECT + 1; i++) {
+    // (ptr,length)
+    int blockPtr = (ip->addrs[i] >> 8); //ptr for first block
+    int extentLen = (ip->addrs[i] & 0xff); //length of extent
+      if (extentLen == 0) { // Block not currently allocated
+        if (i == NDIRECT) { 
+          int addr = balloc(ip->dev);
+          blockPtr = (ip->addrs[NDIRECT] >> 8);
+          extentLen = (ip->addrs[NDIRECT] & 0xff);
+          // Block adjancent to last pair i.e its the neighbouring block, we need to increase the last extent
+          if (blockPtr + extentLen == addr) { 
+            ip->addrs[NDIRECT] = (blockPtr << 8) | (extentLen + 1);
+          } else {
+            panic("bmap: file exceeds maximum extents");
+          }
+        }
+        // if not adjucent to the last pair, need to allocate a new pair
+         else { 
+          int addr = balloc(ip->dev);
+          if (bn == 0 && extentLen == 0) { 
+            // allocating first pair and returing its address
+            ip->addrs[0] = (addr << 8) | 1;
+            return addr;
+          } else { 
+            // adding another pair if this is not the first pair
+            // resetting values of first block ptr and extent length/size
+            blockPtr = (ip->addrs[bn - 1] >> 8); 
+            extentLen = (ip->addrs[bn - 1] & 0xff); 
+            // Now checking again if the block is adjucent to last block and coalesce it into pair
+            // if not adjucent , creating new pair in else->
+            if (blockPtr + extentLen == addr) { 
+              ip->addrs[i - 1] = (blockPtr << 8) | (extentLen + 1);
+              return addr;
+            } else { 
+              ip->addrs[i] = (addr << 8) | 1;
+              return addr;
+            }
+          }
+        }
       }
-      else if (bn == len + ip -> addrs[i+1]){
-        nextBlock = i;
+      // Returning block from this pair, if not found check next pair
+      if (bn < blo + extentLen) { 
+        uint offset = bn - blo;
+        return blockPtr + offset;
+      } else { 
+        blo = blockPtr + extentLen;
       }
-    }  
-    uint returnAddr;
-    returnAddr = addr = balloc(ip -> dev);
-    if (addr == (ip -> addrs[nextBlock] >> 8)+(ip -> addrs[nextBlock] & 0xFF) && nextBlock >= 0){
-    //if the bloack allocated is logical neighbor and neighbor in block address
-	      ip -> addrs[nextBlock] += 1; 
-        return returnAddr;
     }
-    
-    if (addBlock >= 0){     // if we need to put block in new disk space
-        //shifting left by 1 byte
-        addr <<= 8; 
-        addr += 1;
-	      ip  ->  addrs[addBlock] = addr;
-        ip  ->  addrs[addBlock + 1] = bn;
-        return returnAddr; 
-    }
-  }    
-
-  else{
-    if(bn < NDIRECT){
+  }
+  //For Direct block
+  if(bn < NDIRECT){
       if((addr = ip->addrs[bn]) == 0)
         ip->addrs[bn] = addr = balloc(ip->dev);
       return addr;
     }
     bn -= NDIRECT;
-
+// for indirect block
     if(bn < NINDIRECT){
       // Load indirect block, allocating if necessary.
       if((addr = ip->addrs[NDIRECT]) == 0)
@@ -435,8 +450,7 @@ bmap(struct inode *ip, uint bn)
       brelse(bp);
       return addr;
     }
-  }
-  panic("bmap: out of range");
+    panic("bmap: out of range");
 }
 
 // Truncate inode (discard contents).
@@ -451,17 +465,18 @@ itrunc(struct inode *ip)
   struct buf *bp;
   uint *a;
   //getting length of extent
-  uint extentLen;
-  if (ip -> type == T_EXTENT) {
-    for (i = 0; i < NDIRECT; i+=2) {
-      extentLen = ip -> addrs[i] & 0xFF;
-      for (j = 0; j <  extentLen; j++) {
-        bfree(ip -> dev, (ip -> addrs[i] >> 8)+j);
+  if (ip->type == T_EXTENT) {
+    int i;
+    for (i = 0; i < NDIRECT + 1; i++) {
+      // (ptr, length)pair
+      int blockPtr = (ip->addrs[i] >> 8);
+      int extentLen = (ip->addrs[i] & 0xff);
+      if (extentLen != 0) {
+        int j;
+        for(j = 0; j < extentLen; j++) { bfree(ip->dev, blockPtr+j); }
       }
-      ip -> addrs[i]=0;
-      ip -> addrs[i+1]=0;
     }
-  } 
+  }
   else {
     for(i = 0; i < NDIRECT; i++){
       if(ip->addrs[i]){
@@ -501,33 +516,14 @@ stati(struct inode *ip, struct stat *st)
   st->type = ip->type;
   st->nlink = ip->nlink;
   st->size = ip->size;
-  /*memmove(st->addrs, ip->addrs, (NDIRECT + 1) * sizeof(uint));
   // TA directed returning the address even though default
   // fstat() doesn't return the address. Added
-  if(ip->type == T_EXTENT){
-    // using 13 since fs.h defines NDIRECT as 12 and says
-    // the address is stored in NDIRECT+1
-    st->addrs = (ip->addrs[NDIRECT+1] & 0xFFFFFF00) >> 2;
-    st->length = (ip->addrs[NDIRECT+1] & 0xFF);
-  } else{
-    st->addrs = ip->addrs[NDIRECT+1];
-    st->length = 1;
-    }
-  if(ip->type == T_EXTENT){
-    int i;
-    uint address;
-    uint offset;
-    uint length;
-    for(i = 0; i < NDIRECT; i+=2)
-    {
-      if (st -> addrs[i]){
-	      address = st -> addrs[i] >> 8;
-	      offset = st -> addrs[i+1];
-	      length = st -> addrs[i] & 0xFF;
-	    cprintf("\nEXTENT\nbase addr: %d\n offset: %d\n length: %d\n", address, offset, length);
-      }
-    }
-  }*/
+  int i;
+  for (i = 0; i < NDIRECT + 1; i++) {
+    st->bloaddrs[i] = ip->addrs[i];
+  }
+
+  
 }
 
 //PAGEBREAK!
@@ -549,8 +545,10 @@ readi(struct inode *ip, char *dst, uint off, uint n)
     return -1;
   // if offset + > maxfilesize*block and type is not equal to T_EXTENT: 
   //limits the size of each extent to 2^8 blocks and the disk addresses to 2^24. 
-  if(off + n > MAXFILE*BSIZE && ip -> type != T_EXTENT)
-    n = MAXFILE*BSIZE - off;
+  //if(off + n > MAXFILE*BSIZE && ip -> type != T_EXTENT)
+   // n = MAXFILE*BSIZE - off;
+   if(off + n > ip->size)
+    n = ip->size - off;
 
   for(tot=0; tot<n; tot+=m, off+=m, dst+=m){
     bp = bread(ip->dev, bmap(ip, off/BSIZE));
