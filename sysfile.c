@@ -466,5 +466,5 @@ sys_lseek(void)
   // f now stores the file referenced by fd
   // changes the offset for the file to the offset value passed in
   f->off = offset;
-  return offset;
+  return f->off;
 }
