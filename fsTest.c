@@ -91,16 +91,21 @@ main (int argc, char* argv[]) {
     printf(stdout, "File2 size is different from expected, size = %d\n", st2.size);
     printf(stdout, "File2 type = %d\n", st2.type);
   }
+
+
+
   //Lseek testing begins here
-  int fd3;
-  if(fd3 = open("mytestFile3.txt", O_CREATE | O_RDWR | O_EXTENT) <= 1){
+
+
+  int fd3 = open("mytestFile3", O_CREATE | O_RDWR | O_EXTENT);
+  if(fd3 <= 1){
     printf(stdout, "Error: Issue creating file1\n");
   }
   if(write(fd3, "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ\n", 64) != 64){
     printf(stdout, "Error: Writing to file3 failed\n");
     exit();
   }
-  printf(stdout, "Testing lseek(). Current file contents:\n");
+  printf(stdout, "*************** Testing lseek(). Current file contents: *************\n");
   
   // output contents of the file
   int n;
@@ -126,7 +131,7 @@ main (int argc, char* argv[]) {
   printf(stdout, "Capitals and digits swapped. Current file contents:\n");
   
   // output contents of the file
-  while((n = read(fd, buf, sizeof(buf))) > 0) {
+  while((n = read(fd3, buf, sizeof(buf))) > 0) {
     if (write(1, buf, n) != n) {
       printf(1, "cat: write error\n");
       exit();
@@ -135,17 +140,16 @@ main (int argc, char* argv[]) {
   if(n < 0)
     printf(1, "cat: read error\n");;
 
-  if(lseek(fd, -1) == 0){
+  if(lseek(fd3, -1) == 0){
     printf(stdout, "Error: lseek() allowed negative offset\n");
   } else{
     printf(stdout, "lseek() correctly didn't allow a negative offset\n");
   }
-  if(lseek(fd, 0x7FFFFFFF) == 0){
+  if(lseek(fd3, 0x7FFFFFFF) == 0){
     printf(stdout, "Error: lseek() allowed offset outside the end of the file\n");
   } else{
     printf(stdout, "lseek() correctly didn't allow offset outside the end of the file\n");
   }
-
   printf(stdout, "***********Testing Extent File system completed!*************\n");
   close(fd);
   close(fd2);
