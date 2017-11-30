@@ -154,12 +154,3 @@ filewrite(struct file *f, char *addr, int n)
   }
   panic("filewrite");
 }
-
-//PA4
-//I believe we can take care of this directly from sysfile.c
-/*int
-lseek(struct file *f, int offset)
-{
-
-  return 0;
-}*/

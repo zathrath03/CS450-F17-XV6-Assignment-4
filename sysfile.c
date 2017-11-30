@@ -294,8 +294,7 @@ sys_open(void)
 
   if(argstr(0, &path) < 0 || argint(1, &omode) < 0)
     return -1;
-  // add O_EXTENT and T_EXTENT handling
-  // may need to also add handling in create
+  
   begin_op();
 
   if(omode & O_CREATE){
